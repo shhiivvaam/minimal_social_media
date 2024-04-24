@@ -1,17 +1,49 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:minimal_social_media/components/my_button.dart';
 import 'package:minimal_social_media/components/my_textfield.dart';
+import 'package:minimal_social_media/helper/helper_functions.dart';
 
-class LoginPage extends StatelessWidget {
+class LoginPage extends StatefulWidget {
+  final void Function()? onTap;
+
+  const LoginPage({super.key, required this.onTap});
+
+  @override
+  State<LoginPage> createState() => _LoginPageState();
+}
+
+class _LoginPageState extends State<LoginPage> {
   // text controllers
   final TextEditingController emailController = TextEditingController();
+
   final TextEditingController passwordController = TextEditingController();
 
-  LoginPage({super.key});
-
   // login method
-  void login() {}
+  void login() async {
+    // show loading circle
+    showDialog(
+      context: context,
+      builder: (context) => Center(
+        child: CircularProgressIndicator(),
+      ),
+    );
+
+    // try signning in
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: emailController.text, password: passwordController.text);
+
+      // pop the loading circle
+      if (context.mounted) Navigator.pop(context);
+    } on FirebaseAuthException catch (e) {
+      // pop loading circle
+      Navigator.pop(context);
+
+      // display the error message to user
+      displayMessageToUser(e.code, context);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,7 +64,7 @@ class LoginPage extends StatelessWidget {
               const SizedBox(height: 25),
 
               // app name
-              Text(
+              const Text(
                 "M I N I M A L     M E D I A",
                 style: TextStyle(fontSize: 20),
               ),
@@ -44,14 +76,15 @@ class LoginPage extends StatelessWidget {
                 obscureText: false,
                 controller: emailController,
               ),
+              const SizedBox(height: 10),
 
               // password textfield
-              const SizedBox(height: 10),
               MyTextField(
                 hintText: "Password!",
                 obscureText: true,
                 controller: passwordController,
               ),
+              const SizedBox(height: 10),
 
               // forgot password
               Row(
@@ -69,8 +102,7 @@ class LoginPage extends StatelessWidget {
 
               // sign in button
               MyButton(text: "Login", onTap: login),
-              // TODO: causing overflow -> handle
-              // const SizedBox(height: 25),
+              const SizedBox(height: 25),
 
               // don't have an account? Register here
               Row(
@@ -83,9 +115,9 @@ class LoginPage extends StatelessWidget {
                     ),
                   ),
                   GestureDetector(
-                    onTap: (){},
-                    child: Text(
-                      "Register Here",
+                    onTap: widget.onTap,
+                    child: const Text(
+                      " Register Here",
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                       ),

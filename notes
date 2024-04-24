@@ -1,0 +1,9 @@
+Firebase Setup -> Terminal Commands
+
+    1. firebase login
+    2. dart pub global activate flutterfire_cli
+        -> if persisted with an error(like export% -> copy paste the error in the terminal only )
+
+    3. flutterfire configure
+    4. flutter pub add firebase_core
+    5. flutter pub add firebase_auth
