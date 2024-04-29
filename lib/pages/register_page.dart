@@ -54,6 +54,7 @@ class _RegisterPageState extends State<RegisterPage> {
         // create a user document and add to the firestore
         createUserDocument(userCredential);
 
+        // TODO : affter succesfull registeration, the CircularProgressIndicator is not popping out -> fix
         // pop the loading circle
         if (context.mounted) Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
