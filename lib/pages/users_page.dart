@@ -7,7 +7,9 @@ class UsersPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Users"),
+        title: const Text("Users"),
+        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        elevation: 0,
       ),
     );
   }

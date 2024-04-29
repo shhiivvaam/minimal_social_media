@@ -7,3 +7,6 @@ Firebase Setup -> Terminal Commands
     3. flutterfire configure
     4. flutter pub add firebase_core
     5. flutter pub add firebase_auth
+
+    --------------------------------
+    6. flutter pub add cloud_firestore

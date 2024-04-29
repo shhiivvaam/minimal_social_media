@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:minimal_social_media/components/my_button.dart';
@@ -16,11 +17,8 @@ class RegisterPage extends StatefulWidget {
 class _RegisterPageState extends State<RegisterPage> {
   // text controllers
   final TextEditingController usernameController = TextEditingController();
-
   final TextEditingController emailController = TextEditingController();
-
   final TextEditingController passwordController = TextEditingController();
-
   final TextEditingController confirmPwController = TextEditingController();
 
   // register method
@@ -46,11 +44,18 @@ class _RegisterPageState extends State<RegisterPage> {
       // try creating the user
       try {
         // create the user
-        UserCredential? usercredential = await FirebaseAuth.instance
-            .createUserWithEmailAndPassword(
-                email: emailController.text, password: passwordController.text);
+        UserCredential? userCredential =
+            await FirebaseAuth.instance.createUserWithEmailAndPassword(
+          email: emailController.text,
+          password: passwordController.text,
+        );
+
+        // firebase cloud store data updation
+        // create a user document and add to the firestore
+        createUserDocument(userCredential);
+
         // pop the loading circle
-        Navigator.pop(context);
+        if (context.mounted) Navigator.pop(context);
       } on FirebaseAuthException catch (e) {
         // pop loading circle
         Navigator.pop(context);
@@ -74,6 +79,24 @@ class _RegisterPageState extends State<RegisterPage> {
 
     //   return;
     // }
+  }
+
+  // create a user document and collect them in firestore
+  Future<void> createUserDocument(UserCredential? userCredential) async {
+    if (userCredential != null && userCredential.user != null) {
+      await FirebaseFirestore.instance
+          .collection("Users")
+          .doc(userCredential.user!.email)
+          .set(
+        {
+          "email": userCredential.user!.email,
+          "username": usernameController.text,
+          // "uid": userCredential.user!.uid,
+          // "photoUrl": userCredential.user!.photoURL,
+          // "displayName": userCredential.user!.displayName,
+        },
+      );
+    }
   }
 
   @override
